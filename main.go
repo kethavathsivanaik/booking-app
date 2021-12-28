@@ -2,23 +2,23 @@ package main
 
 import (
 	"fmt"
-	"strings"
-	"booking-app/helper"
+	"strconv"
 )
 
 var conferenceName = "Go Conference"
-const conferenceTickets uint = 50
-var remainingTickets uint = 50
-var bookings = []string{}
 
+const conferenceTickets uint = 50
+
+var remainingTickets uint = 50
+var bookings = make([]map[string]string, 0)
 
 func main() {
 
 	greetUsers()
 
 	for {
-		firstName, lastName , email, userTickets := getUserInput()
-		isValidName, isValidEmail, isValidTicketNumber :=  helper.ValidateUserInput(firstName, lastName, email, userTickets, remainingTickets)
+		firstName, lastName, email, userTickets := getUserInput()
+		isValidName, isValidEmail, isValidTicketNumber := validateUserInput(firstName, lastName, email, userTickets, remainingTickets)
 		if isValidName && isValidEmail && isValidTicketNumber {
 			bookTickets(userTickets, firstName, lastName, email)
 			firstNames := getFirstNames()
@@ -49,25 +49,20 @@ func greetUsers() {
 	fmt.Println("Get your tickets here to attend")
 }
 
-
-func getFirstNames() []string{
+func getFirstNames() []string {
 	firstNames := []string{}
 	for _, booking := range bookings {
-		var names = strings.Fields(booking)
-		var firstName = names[0]
-		firstNames = append(firstNames, firstName)
+		firstNames = append(firstNames, booking["firstName"])
 	}
 	return firstNames
 }
-
-
 
 func getUserInput() (string, string, string, uint) {
 	var firstName string
 	var lastName string
 	var email string
 	var userTickets uint
-	
+
 	fmt.Print("Enter your first name: ")
 	fmt.Scan(&firstName)
 	fmt.Print("Enter your last name: ")
@@ -80,9 +75,20 @@ func getUserInput() (string, string, string, uint) {
 	return firstName, lastName, email, userTickets
 }
 
-func bookTickets (userTickets uint, firstName string, lastName string, email string) {
+func bookTickets(userTickets uint, firstName string, lastName string, email string) {
 	remainingTickets = remainingTickets - userTickets
-	bookings = append(bookings, firstName+" "+lastName)
+
+	// create map for users
+	var userData = make(map[string]string)
+	userData["firstName"] = firstName
+	userData["lastName"] = lastName
+	userData["email"] = email
+	userData["numberOfTickets"] = strconv.FormatUint(uint64(userTickets), 10)
+
+	bookings = append(bookings, userData)
+	
+	fmt.Printf("List of bookings is %v\n", bookings)
+
 	fmt.Printf("The whole slice: %v\n", bookings)
 	fmt.Printf("user %v booked %v tickets.\n", firstName, userTickets)
 	fmt.Printf("Thank you %v %v for booking %v tickets. You will recieve a confirmation email at %v\n", firstName, lastName, userTickets, email)
