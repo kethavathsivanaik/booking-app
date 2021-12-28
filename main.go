@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"booking-app/helper"
 )
 
 var conferenceName = "Go Conference"
@@ -16,19 +17,12 @@ func main() {
 	greetUsers()
 
 	for {
-				// ask user for their name
-
 		firstName, lastName , email, userTickets := getUserInput()
-    
-		isValidName, isValidEmail, isValidTicketNumber :=  validateUserInput(firstName, lastName, email, userTickets)
-
+		isValidName, isValidEmail, isValidTicketNumber :=  helper.ValidateUserInput(firstName, lastName, email, userTickets, remainingTickets)
 		if isValidName && isValidEmail && isValidTicketNumber {
-
 			bookTickets(userTickets, firstName, lastName, email)
-
 			firstNames := getFirstNames()
 			fmt.Println(firstNames)
-
 			if remainingTickets == 0 {
 				//end program
 				fmt.Println("Our conference is booked out, Come back next year")
@@ -66,12 +60,7 @@ func getFirstNames() []string{
 	return firstNames
 }
 
-func validateUserInput(firstName string, lastName string, email string, userTickets uint) (bool, bool, bool) {
-	isValidName := len(firstName) >= 2 && len(lastName) >= 2
-	isValidEmail := strings.Contains(email, "@")
-	isValidTicketNumber := userTickets > 0 && userTickets <= remainingTickets
-	return isValidName, isValidEmail, isValidTicketNumber
-}
+
 
 func getUserInput() (string, string, string, uint) {
 	var firstName string
@@ -80,18 +69,15 @@ func getUserInput() (string, string, string, uint) {
 	var userTickets uint
 	
 	fmt.Print("Enter your first name: ")
-		fmt.Scan(&firstName)
+	fmt.Scan(&firstName)
+	fmt.Print("Enter your last name: ")
+	fmt.Scan(&lastName)
+	fmt.Print("Enter your email: ")
+	fmt.Scan(&email)
+	fmt.Print("Enter number of tickets: ")
+	fmt.Scan(&userTickets)
 
-		fmt.Print("Enter your last name: ")
-		fmt.Scan(&lastName)
-
-		fmt.Print("Enter your email: ")
-		fmt.Scan(&email)
-
-		fmt.Print("Enter number of tickets: ")
-		fmt.Scan(&userTickets)
-
-		return firstName, lastName, email, userTickets
+	return firstName, lastName, email, userTickets
 }
 
 func bookTickets (userTickets uint, firstName string, lastName string, email string) {
